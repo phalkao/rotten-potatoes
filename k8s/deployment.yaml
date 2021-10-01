@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: mongodbhttps://github.com/phalkao/rotten-potatoes.git
+        app: mongodb
     spec:
       containers:
         - name: mongodb
