@@ -1,82 +1,95 @@
 # Deployment do MongoDB
 apiVersion: apps/v1
 kind: Deployment
-metadata:
+metadata: 
   name: mongodb
-spec:
-  selector:
-    matchLabels:
+spec: 
+  selector: 
+    matchLabels: 
       app: mongodb
-  template:
-    metadata:
-      labels:
+  template: 
+    metadata: 
+      labels: 
         app: mongodb
-    spec:
-      containers:
-        - name: mongodb
-          image: mongo:4.4.6
-          ports:
-            - containerPort: 27017
-          env:
-            - name: MONGODB_INITDB_ROOT_USERNAME
+    spec: 
+      containers: 
+        - 
+          env: 
+            - 
+              name: MONGO_INITDB_ROOT_USERNAME
               value: mongouser
-            - name: MONGODB_INITDB_ROOT_PASSWORD
-              value: mongopwd 
+            - 
+              name: MONGO_INITDB_ROOT_PASSWORD
+              value: mongopwd
+          image: "mongo:4.4.6"
+          name: mongodb
+          ports: 
+            - 
+              containerPort: 27017
 ---
 # Service do MongoDB
 apiVersion: v1
 kind: Service
-metadata:
+metadata: 
   name: mongodb
-spec:
-  selector:
+spec: 
+  ports: 
+    - 
+      port: 27017
+  selector: 
     app: mongodb
-  ports:
-    - port: 27017
   type: ClusterIP
 ---
 # Deployment da aplicação Web
 apiVersion: apps/v1
 kind: Deployment
-metadata:
+metadata: 
   name: web
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
+spec: 
+  replicas: 20
+  selector: 
+    matchLabels: 
       app: web
-  template:
-    metadata:
-      labels:
+  template: 
+    metadata: 
+      labels: 
         app: web
-    spec:
-      containers:
-        - name: web
-          image: phalkao/rotten-potatoes:v1
-          ports:
-            - containerPort: 5000
-          env:
-            - name: MONGODB_DB
-              value: "admin"
-            - name: MONGODB_HOST
-              value: "mongodb"
-            - name: MONGODB_PORT
+    spec: 
+      containers: 
+        - 
+          env: 
+            - 
+              name: MONGODB_DB
+              value: admin
+            - 
+              name: MONGODB_HOST
+              value: mongodb
+            - 
+              name: MONGODB_PORT
               value: "27017"
-            - name: MONGODB_USERNAME
-              value: "mongouser"
-            - name: MONGODB_PASSWORD
-              value: "mongopwd"
+            - 
+              name: MONGODB_USERNAME
+              value: mongouser
+            - 
+              name: MONGODB_PASSWORD
+              value: mongopwd
+          image: "phalkao/rotten-potatoes:v1"
+          name: web
+          ports: 
+            - 
+              containerPort: 5000
 ---
 # Service da aplicação Web
 apiVersion: v1
 kind: Service
-metadata:
+metadata: 
   name: web
-spec:
-  selector:
-    app: web
-  ports:
-    - port: 80
-      targetPort: 5000
+spec: 
+  ports: 
+    - 
       nodePort: 30000
-  type: NodePort
+      port: 80
+      targetPort: 5000
+  selector: 
+    app: web
+  type: LoadBalancer
